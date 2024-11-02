@@ -42,6 +42,7 @@ Vagrant.configure("2") do |config|
           jq
           firefox
           xdg-utils
+          direnv
       )
 
       apt-get update
@@ -63,12 +64,20 @@ Vagrant.configure("2") do |config|
     SHELL
   end
 
+  config.vm.provision "direnv", type: "shell", privileged: false do |s|
+    s.inline = "echo 'eval \"$(direnv hook bash)\"' >> ~/.bashrc"
+  end
+
   config.vm.provision "set_timezone", type: "shell" do |s|
     s.inline = "timedatectl set-timezone 'America/Chicago'"
   end
 
   config.vm.provision "ssh_keygen", type: "shell", privileged: false do |s|
-    s.inline = "ssh-keygen -t ed25519 -f '/home/vagrant/.ssh/#{host_env['PROJECT_NAME']}' -N '' -C '#{host_env['PROJECT_NAME']}'"
+    s.inline = "ssh-keygen -t ed25519 -f '/home/vagrant/.ssh/#{host_env['SSH_NAME']}' -N '' -C '#{host_env['SSH_NAME']}'"
+  end
+
+  config.vm.provision "bash_aliases", type: "shell", privileged: false do |s|
+    s.inline = "echo \"alias ssha='eval \\$(ssh-agent -s) && ssh-add ~/.ssh/#{host_env['SSH_NAME']}'\" >> ~/.bash_aliases"
   end
 
   config.vm.provision "install devpod", type: "shell", privileged: false do |s|
@@ -91,7 +100,7 @@ Vagrant.configure("2") do |config|
     s.path = "scripts/add_github_repos.sh"
     s.env = {
       "GITHUB_TOKEN" => host_env['GITHUB_TOKEN'],
-      "PROJECT_NAME" => host_env['PROJECT_NAME'],
+      "SSH_NAME" => host_env['SSH_NAME'],
       "GIT_COMMANDS" => <<-EOF
         git clone git@github.com:micha-aucoin/homelab.git;
       EOF

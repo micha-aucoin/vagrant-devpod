@@ -1,10 +1,10 @@
 #!/bin/bash
 
-SSH_PUB_KEY=$(cat /home/vagrant/.ssh/${PROJECT_NAME}.pub)
+SSH_PUB_KEY=$(cat /home/vagrant/.ssh/${SSH_NAME}.pub)
 
 JSON_PAYLOAD=$(jq -n \
   --arg key "$SSH_PUB_KEY" \
-  --arg title "${PROJECT_NAME}" \
+  --arg title "${SSH_NAME}" \
   '{"title": $title, "key": $key}')
 
 # Add SSH key to GitHub account via API
@@ -24,7 +24,7 @@ ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # Start the SSH agent and add your SSH key
 eval $(ssh-agent -s)
-ssh-add ~/.ssh/${PROJECT_NAME}
+ssh-add ~/.ssh/${SSH_NAME}
 
 # Clone the repository
 eval $GIT_COMMANDS

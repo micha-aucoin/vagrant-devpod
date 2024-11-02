@@ -2,3 +2,5 @@
 *.log
 .env
 .vault-key
+.envrc
+kubeconfig
