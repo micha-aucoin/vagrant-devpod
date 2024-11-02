@@ -72,6 +72,10 @@ Vagrant.configure("2") do |config|
     s.inline = 'devpod ide use none && devpod ide list'
   end
 
+  config.vm.provision "set dotfiles", type: "shell", privileged: false do |s|
+    s.inline = 'devpod context set-options -o DOTFILES_URL=git@github.com:micha-aucoin/dotfiles-devpod.git'
+  end
+
   config.vm.provision "add_github_repos", type: "shell", privileged: false do |s|
     s.path = "scripts/add_github_repos.sh"
     s.env = {
