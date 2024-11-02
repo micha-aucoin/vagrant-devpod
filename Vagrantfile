@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-22.04"
   config.vm.network "public_network"
   config.ssh.forward_x11 = true
-  config.ssh.forward_agent = true
+  # config.ssh.forward_agent = true
 
   # config.vm.provision "shell", inline: "sleep 60"
 
@@ -49,6 +49,17 @@ Vagrant.configure("2") do |config|
           echo "Installing $pkg..."
           apt-get install -y --no-install-recommends "$pkg"
       done
+    SHELL
+  end
+
+  config.vm.provision "install kubectl", type: "shell" do |s|
+    s.inline = <<-SHELL
+      curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+      if echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check; then
+        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+      fi
+      rm -f kubectl kubectl.sha256
     SHELL
   end
 
