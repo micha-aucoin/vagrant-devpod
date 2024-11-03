@@ -107,6 +107,15 @@ Vagrant.configure("2") do |config|
     }
   end
 
+  config.vm.provision "symlinks", type: "shell", privileged: false do |s|
+    s.inline = <<-SHELL
+      cp /vagrant/kubeconfig /vagrant/.envrc $HOME/homelab
+      chmod 600 $HOME/homelab/.envrc $HOME/homelab/kubeconfig
+      ln -sf /vagrant/kubeconfig $HOME/homelab
+      ln -sf /vagrant/.envrc $HOME/homelab
+    SHELL
+  end
+
   config.trigger.before :destroy do |trigger|
     trigger.name = "remove_gh_ssh_key"
     trigger.warn = "This will remove the SSH key from your GitHub account."
