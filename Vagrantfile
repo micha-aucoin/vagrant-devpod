@@ -111,8 +111,6 @@ Vagrant.configure("2") do |config|
     s.inline = <<-SHELL
       cp /vagrant/kubeconfig /vagrant/.envrc $HOME/homelab
       chmod 600 $HOME/homelab/.envrc $HOME/homelab/kubeconfig
-      ln -sf /vagrant/kubeconfig $HOME/homelab
-      ln -sf /vagrant/.envrc $HOME/homelab
     SHELL
   end
 
